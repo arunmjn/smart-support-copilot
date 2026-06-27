@@ -1,69 +1,217 @@
-"""
-rag.py – Document ingestion, chunking, FAISS retrieval.
-Uses sentence-transformers (no API key needed for embeddings).
-"""
-import io
-import faiss
-import numpy as np
-from sentence_transformers import SentenceTransformer
+SMART SUPPORT DEVICE MANUAL
+Version 1.0
+Enterprise Consumer Electronics Support Manual
 
-_MODEL = None
+--------------------------------------------------
+SECTION 1: DEVICE OVERVIEW
+--------------------------------------------------
 
-def _get_model():
-    global _MODEL
-    if _MODEL is None:
-        _MODEL = SentenceTransformer("all-MiniLM-L6-v2")
-    return _MODEL
+Supported Devices:
+- Galaxy S23
+- Galaxy S24
+- Galaxy Fold Series
+- Galaxy Flip Series
+- Samsung Smart TVs
 
+Key Features:
+- AMOLED Display
+- Fast Charging
+- Battery Protection
+- One UI Operating System
+- Knox Security
+- AI Battery Optimization
 
-def _extract_text(file) -> str:
-    name = getattr(file, "name", "")
-    raw  = file.read()
-    if name.endswith(".pdf"):
-        try:
-            import pdfplumber
-            with pdfplumber.open(io.BytesIO(raw)) as pdf:
-                return "\n".join(p.extract_text() or "" for p in pdf.pages)
-        except Exception:
-            pass
-    return raw.decode("utf-8", errors="ignore")
+--------------------------------------------------
+SECTION 2: OVERHEATING ISSUES
+--------------------------------------------------
 
+Problem:
+Device becomes unusually hot during:
+- Charging
+- Gaming
+- Video streaming
+- Software updates
 
-def _chunk_text(text: str, chunk_size: int = 400, overlap: int = 80):
-    words = text.split()
-    chunks, i = [], 0
-    while i < len(words):
-        chunks.append(" ".join(words[i: i + chunk_size]))
-        i += chunk_size - overlap
-    return chunks
+Possible Causes:
+- Background apps
+- High screen brightness
+- Faulty charger
+- Poor ventilation
+- Recent firmware update
 
+Recommended Solutions:
+1. Close unused apps
+2. Restart device
+3. Remove protective case
+4. Use original charger only
+5. Reduce brightness
+6. Update software
+7. Clear cache partition
 
-def build_vectorstore(uploaded_files):
-    all_chunks, all_sources = [], []
-    for f in uploaded_files:
-        text   = _extract_text(f)
-        chunks = _chunk_text(text)
-        all_chunks.extend(chunks)
-        all_sources.extend([getattr(f, "name", "document")] * len(chunks))
+Escalate When:
+- Device shuts down repeatedly
+- Battery swelling occurs
+- Temperature warning persists for 24+ hours
 
-    if not all_chunks:
-        return None
+--------------------------------------------------
+SECTION 3: BATTERY DRAIN
+--------------------------------------------------
 
-    model      = _get_model()
-    embeddings = model.encode(all_chunks, show_progress_bar=False).astype("float32")
-    index      = faiss.IndexFlatL2(embeddings.shape[1])
-    index.add(embeddings)
-    return {"index": index, "chunks": all_chunks, "sources": all_sources}
+Problem:
+Battery drains rapidly after update.
 
+Possible Causes:
+- Background sync
+- Location services
+- High refresh rate
+- App conflicts
 
-def retrieve_context(vectorstore, query: str, top_k: int = 3):
-    model  = _get_model()
-    q_emb  = model.encode([query]).astype("float32")
-    _, ids = vectorstore["index"].search(q_emb, top_k)
+Solutions:
+1. Enable Power Saving Mode
+2. Disable background apps
+3. Lower refresh rate
+4. Update problematic apps
+5. Reset battery settings
 
-    chunks  = [vectorstore["chunks"][i]  for i in ids[0] if i < len(vectorstore["chunks"])]
-    sources = [vectorstore["sources"][i] for i in ids[0] if i < len(vectorstore["sources"])]
+Battery Optimization Settings:
+Settings > Battery > Device Care > Optimize
 
-    context      = "\n\n---\n\n".join(chunks)
-    source_label = "Retrieved from: " + ", ".join(dict.fromkeys(sources))
-    return context, source_label
+--------------------------------------------------
+SECTION 4: DEVICE RESET
+--------------------------------------------------
+
+Soft Reset:
+Hold Power + Volume Down for 10 seconds.
+
+Factory Reset:
+Settings > General Management > Reset > Factory Data Reset
+
+Important:
+Factory reset deletes:
+- Apps
+- Accounts
+- Settings
+- Local files
+
+Backup before reset.
+
+--------------------------------------------------
+SECTION 5: CONNECTIVITY ISSUES
+--------------------------------------------------
+
+WiFi Problems:
+- Restart router
+- Forget and reconnect network
+- Reset network settings
+
+Bluetooth Problems:
+- Clear Bluetooth cache
+- Re-pair device
+- Restart both devices
+
+Mobile Data:
+- Check APN settings
+- Toggle airplane mode
+- Reinsert SIM
+
+--------------------------------------------------
+SECTION 6: PRODUCT COMPARISON
+--------------------------------------------------
+
+Galaxy S23:
+- 3900mAh battery
+- Snapdragon Gen 2
+- 50MP Camera
+- 120Hz Display
+
+Galaxy S24:
+- 4000mAh battery
+- Snapdragon Gen 3
+- AI Camera Optimization
+- Improved thermal cooling
+- Longer software support
+
+Recommendation:
+S24 is better for:
+- AI features
+- Battery efficiency
+- Long-term updates
+
+S23 is better for:
+- Budget-conscious users
+- Standard flagship experience
+
+--------------------------------------------------
+SECTION 7: SMART TV TROUBLESHOOTING
+--------------------------------------------------
+
+Problem:
+TV not responding
+
+Solutions:
+1. Unplug TV for 60 seconds
+2. Hold power button for 30 seconds
+3. Check remote batteries
+4. Reconnect WiFi
+5. Factory reset TV
+
+Factory Reset:
+Settings > Support > Self Diagnosis > Reset
+
+--------------------------------------------------
+SECTION 8: SOFTWARE UPDATE ISSUES
+--------------------------------------------------
+
+Common Symptoms:
+- Lag
+- Overheating
+- App crashes
+- Battery drain
+
+Solutions:
+1. Clear cache
+2. Restart
+3. Reinstall affected apps
+4. Perform system optimization
+5. Rollback only via service center
+
+--------------------------------------------------
+SECTION 9: WARRANTY & ESCALATION
+--------------------------------------------------
+
+Escalate To Support If:
+- Physical battery swelling
+- Repeated boot loops
+- Charging failure
+- Water damage
+- Screen hardware defects
+
+Warranty Coverage:
+- Manufacturing defects
+- Software failure (limited)
+- Battery issues (within policy)
+
+Not Covered:
+- Physical damage
+- Unauthorized repairs
+- Liquid damage
+
+--------------------------------------------------
+SECTION 10: FAQ
+--------------------------------------------------
+
+Q: Why is my phone overheating?
+A: Usually due to intensive apps, charging, or software conflicts.
+
+Q: How do I compare S23 and S24?
+A: S24 offers better battery, AI, and software longevity.
+
+Q: How do I reset my Samsung Smart TV?
+A: Navigate to Settings > Support > Self Diagnosis > Reset.
+
+Q: What if issue persists?
+A: Escalate to authorized service center.
+
+--------------------------------------------------
+END OF MANUAL
+--------------------------------------------------
